@@ -7,7 +7,7 @@ pipeline {
     }
 
     options {
-        buildDiscarder(logRotator(numToKeepStr: '15'))
+        buildDiscarder(logRotator(numToKeepStr: '20'))
         disableConcurrentBuilds()
         timeout(time: 45, unit: 'MINUTES')
         timestamps()
@@ -43,14 +43,33 @@ pipeline {
             }
         }
 
-        stage('Unit & Slice Testing') {
+        stage('Unit, Slice & Regression Testing') {
             steps {
-                echo 'Executing JUnit 5 and slice test suites...'
+                echo 'Executing JUnit 5, Mockito, slice and regression test suites...'
                 sh 'mvn test'
             }
             post {
                 always {
                     junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Code Quality Gate & JaCoCo Coverage') {
+            steps {
+                echo 'Evaluating code coverage against JaCoCo quality gate thresholds...'
+                sh 'mvn jacoco:report jacoco:check'
+            }
+            post {
+                always {
+                    publishHTML(target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'target/site/jacoco',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Code Coverage Report'
+                    ])
                 }
             }
         }
@@ -99,10 +118,10 @@ pipeline {
 
     post {
         success {
-            echo 'SUCCESS: Continuous Integration & Deployment Pipeline completed successfully!'
+            echo 'SUCCESS: Complete Continuous Integration & Deployment Pipeline succeeded with all Quality Gates satisfied!'
         }
         failure {
-            echo 'CRITICAL FAILURE: Pipeline failed. Initiating automated recovery and alerting team.'
+            echo 'CRITICAL FAILURE: Pipeline failed. Quality gates or tests violated. Inspect build log details above.'
         }
         always {
             cleanWs deleteDirs: true, notFailBuild: true
