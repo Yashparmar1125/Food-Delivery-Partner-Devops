@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PartnerController.class)
 @Import(SecurityConfig.class)
+@WithMockUser(authorities = {"ROLE_ADMIN", "ROLE_OPS_MANAGER"})
 class PartnerControllerTest {
 
     @Autowired
