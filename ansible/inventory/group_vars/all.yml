@@ -1,0 +1,30 @@
+---
+# Global configuration variables across all target hosts
+app_name: food-delivery-partner-portal
+app_version: 1.0.0
+app_user: partnerapp
+app_group: partnerapp
+app_base_dir: /opt/food-delivery-partner
+app_config_dir: "{{ app_base_dir }}/config"
+app_data_dir: "{{ app_base_dir }}/data"
+app_logs_dir: "{{ app_base_dir }}/logs"
+app_backups_dir: "{{ app_base_dir }}/backups"
+
+# Networking & Ports
+server_port: 8080
+db_port: 5432
+
+# Container Configuration
+container_image: "food-delivery-partner-portal:{{ app_version }}"
+db_image: "postgres:16-alpine"
+docker_network_name: partner_portal_network
+
+# System Packages for Ubuntu/Debian Host
+docker_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - python3-pip
+  - python3-docker

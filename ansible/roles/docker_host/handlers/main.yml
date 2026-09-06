@@ -1,0 +1,6 @@
+---
+# Handlers for docker_host role
+- name: Restart Docker daemon
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted

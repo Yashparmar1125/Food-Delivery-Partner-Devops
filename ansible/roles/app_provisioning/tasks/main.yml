@@ -1,0 +1,56 @@
+---
+# Tasks for role: app_provisioning
+
+- name: Create dedicated application group
+  ansible.builtin.group:
+    name: "{{ app_group }}"
+    state: present
+    system: yes
+
+- name: Create dedicated application user
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    groups: docker
+    append: yes
+    system: yes
+    create_home: yes
+    shell: /bin/bash
+
+- name: Create application directory hierarchy
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0750'
+  loop:
+    - "{{ app_base_dir }}"
+    - "{{ app_config_dir }}"
+    - "{{ app_data_dir }}"
+    - "{{ app_logs_dir }}"
+    - "{{ app_backups_dir }}"
+
+- name: Deploy application environment configuration (.env)
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ app_base_dir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0600'
+    backup: yes
+
+- name: Copy docker-compose.yml to application directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../docker-compose.yml"
+    dest: "{{ app_base_dir }}/docker-compose.yml"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0640'
+
+- name: Create persistent Docker network for portal services
+  community.docker.docker_network:
+    name: "{{ docker_network_name }}"
+    driver: bridge
+    state: present
+  ignore_errors: yes

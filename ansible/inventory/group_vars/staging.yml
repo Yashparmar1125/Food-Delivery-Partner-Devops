@@ -1,0 +1,9 @@
+---
+# Staging environment overrides
+spring_profiles_active: staging
+db_name: partner_portal_db_staging
+db_username: partner_admin
+db_password: "StagingSecurePassword123!"
+jwt_secret: "staging-secret-key-9a7b8c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"
+jwt_expiration_ms: 86400000
+log_level: DEBUG

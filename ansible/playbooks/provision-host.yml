@@ -1,0 +1,50 @@
+---
+# ==============================================================================
+# Playbook: provision-host.yml
+# Purpose: Complete infrastructure provisioning & host hardening for partner portal
+# ==============================================================================
+- name: Provision and Harden Food Delivery Partner Portal Host
+  hosts: partner_portal
+  become: yes
+  gather_facts: yes
+
+  vars_files:
+    - ../inventory/group_vars/all.yml
+    - "../inventory/group_vars/{{ deployment_environment | default('staging') }}.yml"
+
+  pre_tasks:
+    - name: Verify host connectivity and operating system
+      ansible.builtin.debug:
+        msg: "Provisioning target host {{ inventory_hostname }} running {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Ensure target environment meets minimum requirements
+      ansible.builtin.assert:
+        that:
+          - ansible_memtotal_mb >= 1024
+        fail_msg: "Host does not have sufficient memory (minimum 1GB RAM required)."
+        success_msg: "Host memory check passed: {{ ansible_memtotal_mb }} MB available."
+
+  roles:
+    - role: docker_host
+      tags:
+        - docker
+        - runtime
+
+    - role: app_provisioning
+      tags:
+        - provisioning
+        - filesystem
+        - config
+
+  post_tasks:
+    - name: Verify Docker service health
+      ansible.builtin.command: docker --version
+      register: docker_version_output
+      changed_when: false
+
+    - name: Display provisioning completion status
+      ansible.builtin.debug:
+        msg:
+          - "Host provisioning completed successfully for {{ inventory_hostname }}."
+          - "Docker Engine: {{ docker_version_output.stdout }}"
+          - "Application directory: {{ app_base_dir }}"
