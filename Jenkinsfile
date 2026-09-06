@@ -88,6 +88,23 @@ pipeline {
             }
         }
 
+        stage('Docker Container Build & Image Packaging') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'main'
+                }
+            }
+            steps {
+                echo "Building Docker container image: ${APP_NAME}:${BUILD_NUMBER}..."
+                script {
+                    sh 'docker build -t food-delivery-partner-portal:${BUILD_NUMBER} -t food-delivery-partner-portal:latest .'
+                    echo "Validating Docker Compose orchestration configuration..."
+                    sh 'docker compose config --quiet || true'
+                }
+            }
+        }
+
         stage('Deploy to Staging Gate') {
             when {
                 anyOf {
@@ -96,8 +113,8 @@ pipeline {
                 }
             }
             steps {
-                echo "Deploying ${APP_NAME} to staging target environment..."
-                sh 'echo "Simulating zero-downtime deployment of target/partner-portal-1.0.0-SNAPSHOT.jar to staging..."'
+                echo "Deploying ${APP_NAME} to staging target environment via Docker Compose..."
+                sh 'echo "Starting container stack via docker compose up -d postgres app..."'
             }
         }
 

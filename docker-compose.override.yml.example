@@ -1,0 +1,19 @@
+# Example Docker Compose override for local developer overrides
+# Usage: Copy to docker-compose.override.yml and modify as needed.
+# Note: docker-compose.override.yml is ignored by git to protect local secrets.
+
+services:
+  app:
+    environment:
+      # Enable verbose logging for debugging
+      LOGGING_LEVEL_COM_PROJECT_PARTNERPORTAL: DEBUG
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: DEBUG
+    # Map extra ports or local volume mounts for live reload if desired
+    # volumes:
+    #   - ./target/partner-portal.jar:/app/app.jar
+
+  postgres:
+    ports:
+      # Expose PostgreSQL port on host for direct pgAdmin / DBeaver / psql connections
+      - "5432:5432"

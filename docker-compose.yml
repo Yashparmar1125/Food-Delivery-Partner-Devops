@@ -1,0 +1,109 @@
+services:
+  # ============================================================================
+  # Database Service: PostgreSQL 16
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: partner-portal-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-partner_portal_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-1125}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - partner-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-partner_portal_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    resources:
+      limits:
+        memory: 512M
+        cpus: '1.0'
+      reservations:
+        memory: 256M
+
+  # ============================================================================
+  # Application Service: Spring Boot Food Delivery Partner Portal
+  # ============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: food-delivery-partner-portal:1.0.0
+    container_name: partner-portal-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-partner_portal_db}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-1125}
+      JWT_SECRET: ${JWT_SECRET:-9a7b8c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b}
+      JWT_EXPIRATION_MS: 86400000
+      SERVER_PORT: 8080
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    networks:
+      - partner-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 35s
+    resources:
+      limits:
+        memory: 768M
+        cpus: '1.5'
+      reservations:
+        memory: 384M
+
+  # ============================================================================
+  # Database Management GUI: pgAdmin4 (Optional Profile)
+  # ============================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: partner-portal-pgadmin
+    restart: unless-stopped
+    profiles:
+      - tools
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@partnerportal.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-Admin@123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    networks:
+      - partner-network
+    resources:
+      limits:
+        memory: 256M
+
+# ==============================================================================
+# Storage Volumes & Networks
+# ==============================================================================
+volumes:
+  postgres_data:
+    name: partner_portal_postgres_data
+    driver: local
+
+networks:
+  partner-network:
+    name: partner_portal_network
+    driver: bridge
