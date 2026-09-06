@@ -1,0 +1,35 @@
+---
+# ==============================================================================
+# Playbook: rollback-app.yml
+# Purpose: Emergency manual rollback to previous known-good version
+# ==============================================================================
+- name: Execute Manual Rollback of Food Delivery Partner Portal
+  hosts: partner_portal
+  become: yes
+  gather_facts: yes
+
+  vars_files:
+    - ../inventory/group_vars/all.yml
+    - "../inventory/group_vars/{{ deployment_environment | default('staging') }}.yml"
+
+  tasks:
+    - name: Prompt or verify rollback confirmation
+      ansible.builtin.debug:
+        msg: "Executing manual rollback for host {{ inventory_hostname }} to target image: {{ rollback_image | default('previous known-good version') }}"
+
+    - name: Run application rollback role
+      ansible.builtin.include_role:
+        name: app_rollback
+
+    - name: Verify restored application operational state
+      ansible.builtin.uri:
+        url: "http://localhost:{{ server_port }}/api/v1/health"
+        method: GET
+        status_code: 200
+      register: restored_probe
+
+    - name: Confirm rollback success
+      ansible.builtin.debug:
+        msg:
+          - "SUCCESS: Rollback complete on {{ inventory_hostname }}."
+          - "Restored Health Status: UP (HTTP 200)"

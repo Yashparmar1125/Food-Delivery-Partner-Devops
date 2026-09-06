@@ -1,0 +1,48 @@
+---
+# Tasks for role: app_rollback
+
+- name: Identify rollback image target
+  ansible.builtin.set_fact:
+    rollback_target_image: "{{ rollback_image | default(previous_image_tag | default('food-delivery-partner-portal:latest')) }}"
+
+- name: Log rollback initiation
+  ansible.builtin.debug:
+    msg: "EMERGENCY ROLLBACK: Reverting partner-portal-backend to {{ rollback_target_image }}"
+
+- name: Stop failed application container
+  ansible.builtin.command:
+    cmd: "docker compose stop app"
+    chdir: "{{ app_base_dir }}"
+  failed_when: false
+
+- name: Revert application container to previous known-good image
+  ansible.builtin.command:
+    cmd: "docker run -d --name partner-portal-backend-rollback --network {{ docker_network_name }} -p {{ server_port }}:8080 --env-file {{ app_base_dir }}/.env {{ rollback_target_image }}"
+  register: rollback_container_run
+  failed_when: false
+
+- name: Restart application stack with previous configuration
+  ansible.builtin.command:
+    cmd: "docker compose up -d"
+    chdir: "{{ app_base_dir }}"
+  when: rollback_container_run.rc != 0
+
+- name: Verify restored container health
+  ansible.builtin.uri:
+    url: "http://localhost:{{ server_port }}/actuator/health"
+    method: GET
+    status_code: 200
+    return_content: yes
+  register: rollback_health_check
+  until: rollback_health_check.status == 200 and rollback_health_check.json.status == 'UP'
+  retries: 15
+  delay: 5
+
+- name: Record rollback incident log
+  ansible.builtin.lineinfile:
+    path: "{{ app_logs_dir }}/deployment-incidents.log"
+    create: yes
+    line: "[{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}] ROLLBACK_TRIGGERED: Target reverted to {{ rollback_target_image }}. Health check restored successfully."
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0644'

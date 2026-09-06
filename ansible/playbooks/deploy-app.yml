@@ -1,0 +1,47 @@
+---
+# ==============================================================================
+# Playbook: deploy-app.yml
+# Purpose: Zero-downtime deployment with health verification and automated rollback
+# ==============================================================================
+- name: Deploy Food Delivery Partner Portal Application
+  hosts: partner_portal
+  become: yes
+  gather_facts: yes
+
+  vars_files:
+    - ../inventory/group_vars/all.yml
+    - "../inventory/group_vars/{{ deployment_environment | default('staging') }}.yml"
+
+  tasks:
+    - name: Execute automated deployment pipeline with safety rescue
+      block:
+        - name: Run application deployment role
+          ansible.builtin.include_role:
+            name: app_deploy
+
+        - name: Verify application functional health probe
+          ansible.builtin.uri:
+            url: "http://localhost:{{ server_port }}/api/v1/health"
+            method: GET
+            status_code: 200
+          register: functional_health_result
+
+        - name: Log successful deployment
+          ansible.builtin.debug:
+            msg:
+              - "SUCCESS: {{ app_name }} deployed successfully to {{ inventory_hostname }}."
+              - "Healthcheck Status: UP (HTTP 200)"
+              - "Functional Probe: {{ functional_health_result.json | default('OK') }}"
+
+      rescue:
+        - name: Alert deployment failure
+          ansible.builtin.debug:
+            msg: "CRITICAL ALERT: Healthcheck probe failed after deployment! Initiating automated rollback..."
+
+        - name: Trigger automated rollback procedure
+          ansible.builtin.include_role:
+            name: app_rollback
+
+        - name: Fail playbook execution to notify CI/CD pipeline
+          ansible.builtin.fail:
+            msg: "Deployment failed healthcheck verification. Automated rollback completed successfully."

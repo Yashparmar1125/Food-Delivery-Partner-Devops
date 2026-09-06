@@ -1,0 +1,60 @@
+---
+# Tasks for role: app_deploy
+
+- name: Set deployment timestamp fact
+  ansible.builtin.set_fact:
+    deployment_time: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
+
+- name: Inspect existing running container image version
+  ansible.builtin.command:
+    cmd: "docker inspect --format='{{ '{{' }} .Config.Image {{ '}}' }}' partner-portal-backend"
+  register: previous_image_inspect
+  failed_when: false
+  changed_when: false
+
+- name: Save previous image version fact for rollback
+  ansible.builtin.set_fact:
+    previous_image_tag: "{{ previous_image_inspect.stdout | default('food-delivery-partner-portal:latest') }}"
+
+- name: Create database pre-deployment snapshot
+  ansible.builtin.command:
+    cmd: >
+      docker exec partner-portal-db pg_dump -U {{ db_username | default('postgres') }}
+      {{ db_name | default('partner_portal_db') }}
+  register: db_backup_stream
+  failed_when: false
+  changed_when: false
+
+- name: Save database snapshot to backup archive
+  ansible.builtin.copy:
+    content: "{{ db_backup_stream.stdout }}"
+    dest: "{{ app_backups_dir }}/db_predeploy_{{ deployment_time }}.sql"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0600'
+  when: db_backup_stream.rc == 0 and db_backup_stream.stdout | length > 0
+
+- name: Pull or verify target container image
+  ansible.builtin.command:
+    cmd: "docker pull {{ container_image }}"
+  register: image_pull_result
+  failed_when: false
+  changed_when: "'Downloaded' in image_pull_result.stdout"
+
+- name: Deploy and restart container stack via Docker Compose
+  ansible.builtin.command:
+    cmd: "docker compose up -d --remove-orphans"
+    chdir: "{{ app_base_dir }}"
+  register: compose_deploy_output
+  changed_when: "'Started' in compose_deploy_output.stdout or 'Recreated' in compose_deploy_output.stdout"
+
+- name: Post-deployment health verification probe loop
+  ansible.builtin.uri:
+    url: "http://localhost:{{ server_port }}/actuator/health"
+    method: GET
+    status_code: 200
+    return_content: yes
+  register: health_check_response
+  until: health_check_response.status == 200 and health_check_response.json.status == 'UP'
+  retries: 18
+  delay: 5
