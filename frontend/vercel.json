@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/((?!api|actuator).*)", "destination": "/index.html" }
+  ]
+}
