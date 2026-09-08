@@ -1,39 +1,10 @@
-# Version control
 .git
 .gitignore
-.gitattributes
-
-# Build and binary artifacts
+.github
 target/
-*.class
-*.jar
-*.war
-*.ear
-
-# IDE and Editor files
-.idea/
-*.iml
-.vscode/
-*.swp
-*.swo
-.settings/
-.project
-.classpath
-
-# Local environment & secrets
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-
-# Logs and temporary files
+frontend/node_modules/
+frontend/dist/
+*.md
 *.log
-logs/
-temp/
-tmp/
-
-# Documentation and CI/CD scratch
-.gemini/
-docs/
-scripts/smoke-test.*
+.idea/
+.vscode/
