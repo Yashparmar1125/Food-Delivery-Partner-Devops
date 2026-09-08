@@ -187,12 +187,6 @@ pipeline {
         }
 
         stage('Stage 6: Docker Container Build & DevSecOps Image Scan') {
-            when {
-                anyOf {
-                    branch 'develop'
-                    branch 'main'
-                }
-            }
             steps {
                 echo "Building Docker container image: ${APP_NAME}:1.0.0..."
                 sh 'docker build -t food-delivery-partner-portal:1.0.0 -t food-delivery-partner-portal:${BUILD_NUMBER} -t food-delivery-partner-portal:latest .'
@@ -206,12 +200,6 @@ pipeline {
         }
 
         stage('Stage 7: Zero-Downtime Deployment Gate') {
-            when {
-                anyOf {
-                    branch 'develop'
-                    branch 'main'
-                }
-            }
             steps {
                 echo "Deploying ${APP_NAME} to target environment via Docker Compose..."
                 script {
@@ -229,12 +217,6 @@ pipeline {
         }
 
         stage('Stage 8: Post-Deployment Smoke & Security Audit') {
-            when {
-                anyOf {
-                    branch 'develop'
-                    branch 'main'
-                }
-            }
             steps {
                 echo 'Executing automated post-deployment smoke tests and TLS audit...'
                 sh 'chmod +x scripts/smoke-test.sh'
