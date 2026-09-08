@@ -57,6 +57,9 @@ class AuthControllerTest {
     private RoleRepository roleRepository;
 
     @MockBean
+    private com.project.partnerportal.repository.DeliveryPartnerRepository deliveryPartnerRepository;
+
+    @MockBean
     private PasswordEncoder passwordEncoder;
 
     @MockBean
