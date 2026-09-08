@@ -17,7 +17,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   className = '',
 }) => {
   const [localValue, setLocalValue] = useState(value);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     setLocalValue(value);
