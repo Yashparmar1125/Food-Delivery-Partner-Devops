@@ -29,8 +29,8 @@ public interface DeliveryPartnerRepository extends JpaRepository<DeliveryPartner
     long countByCurrentStatus(PartnerStatus status);
 
     @Query("SELECT p FROM DeliveryPartner p WHERE " +
-            "(:name IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-            "(:phone IS NULL OR p.phoneNumber LIKE CONCAT('%', :phone, '%')) AND " +
+            "(CAST(:name AS string) IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) AND " +
+            "(CAST(:phone AS string) IS NULL OR p.phoneNumber LIKE CONCAT('%', CAST(:phone AS string), '%')) AND " +
             "(:status IS NULL OR p.currentStatus = :status) AND " +
             "(:vehicleType IS NULL OR p.vehicleType = :vehicleType)")
     Page<DeliveryPartner> searchPartners(
