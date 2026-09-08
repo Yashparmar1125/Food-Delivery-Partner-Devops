@@ -48,6 +48,30 @@
     group: "{{ app_group }}"
     mode: '0640'
 
+- name: Copy Dockerfile to application directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../Dockerfile"
+    dest: "{{ app_base_dir }}/Dockerfile"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0640'
+
+- name: Copy pom.xml to application directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../pom.xml"
+    dest: "{{ app_base_dir }}/pom.xml"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0640'
+
+- name: Synchronize src directory to application directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../src"
+    dest: "{{ app_base_dir }}/"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0750'
+
 - name: Create persistent Docker network for portal services
   community.docker.docker_network:
     name: "{{ docker_network_name }}"

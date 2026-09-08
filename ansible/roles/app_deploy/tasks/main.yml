@@ -43,7 +43,7 @@
 
 - name: Deploy and restart container stack via Docker Compose
   ansible.builtin.command:
-    cmd: "docker compose up -d --remove-orphans"
+    cmd: "docker compose up -d --build --remove-orphans"
     chdir: "{{ app_base_dir }}"
   register: compose_deploy_output
   changed_when: "'Started' in compose_deploy_output.stdout or 'Recreated' in compose_deploy_output.stdout"
