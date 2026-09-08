@@ -105,47 +105,64 @@ export default function PartnerOrdersPage() {
         </div>
       )}
 
-      {/* Active Order In Progress Card */}
+      {/* Active Order In Progress Mission Card */}
       {activeOrder && (
-        <Card className="border-emerald-500 border-2 shadow-lg bg-emerald-50/20">
-          <CardHeader className="bg-emerald-600 text-white py-3 px-4 rounded-t-lg">
+        <Card className="border-emerald-500 border-2 shadow-xl bg-emerald-50/30 overflow-hidden">
+          <CardHeader className="bg-emerald-600 text-white py-3.5 px-4">
             <CardTitle className="text-sm flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Navigation className="w-4 h-4 animate-spin" />
-                Active Mission: {activeOrder.orderId}
+              <span className="flex items-center gap-2 font-black">
+                <Navigation className="w-4 h-4 animate-spin text-white" />
+                <span>Mission: {activeOrder.orderId}</span>
               </span>
-              <span className="text-xs font-bold bg-white text-emerald-800 px-2 py-0.5 rounded">
+              <span className="text-xs font-black bg-white text-emerald-800 px-2.5 py-1 rounded-full shadow-xs">
                 ₹{activeOrder.estimatedPayout} Payout
               </span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-3.5">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-bold text-slate-800 block">{activeOrder.restaurantName} (Pickup)</span>
-                  <span className="text-slate-500 text-[11px]">{activeOrder.restaurantAddress}</span>
+          <CardContent className="p-4 space-y-4">
+            <div className="space-y-3 text-xs bg-white p-3.5 rounded-xl border border-emerald-100">
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 bg-amber-100 text-amber-700 rounded-lg shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">1. Pickup Restaurant</span>
+                  <span className="font-bold text-slate-900 text-sm block">{activeOrder.restaurantName}</span>
+                  <span className="text-slate-500 text-xs">{activeOrder.restaurantAddress}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-bold text-slate-800 block">{activeOrder.customerName} (Drop-off)</span>
-                  <span className="text-slate-500 text-[11px]">{activeOrder.customerAddress}</span>
+
+              <div className="h-4 border-l-2 border-dashed border-slate-200 ml-4"></div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">2. Customer Drop-off</span>
+                  <span className="font-bold text-slate-900 text-sm block">{activeOrder.customerName}</span>
+                  <span className="text-slate-500 text-xs">{activeOrder.customerAddress}</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+            <div className="pt-1">
               {orderStage === 'PICKUP' ? (
-                <Button onClick={handleConfirmPickup} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs">
-                  Confirm Food Pickup from Restaurant
-                </Button>
+                <button
+                  onClick={handleConfirmPickup}
+                  className="w-full h-12 bg-amber-600 hover:bg-amber-700 text-white font-black text-sm rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Confirm Food Picked Up from Restaurant</span>
+                </button>
               ) : (
-                <Button onClick={handleCompleteDelivery} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
-                  Complete Delivery & Collect ₹{activeOrder.estimatedPayout}
-                </Button>
+                <button
+                  onClick={handleCompleteDelivery}
+                  className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Complete Delivery & Collect ₹{activeOrder.estimatedPayout}</span>
+                </button>
               )}
             </div>
           </CardContent>

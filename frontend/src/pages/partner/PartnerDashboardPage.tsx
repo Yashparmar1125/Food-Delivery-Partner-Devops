@@ -320,21 +320,21 @@ export default function PartnerDashboardPage() {
     <div className="space-y-5">
       {/* Interactive Online/Offline Duty Card */}
       <div
-        className={`rounded-2xl p-5 shadow-sm border transition-all ${
+        className={`rounded-2xl p-4 sm:p-5 shadow-sm border transition-all ${
           partner.isOnline
-            ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white border-emerald-500'
+            ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white border-emerald-500'
             : 'bg-white border-slate-200 text-slate-800'
         }`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className={`w-2.5 h-2.5 rounded-full ${partner.isOnline ? 'bg-emerald-300 animate-ping' : 'bg-slate-400'}`}></span>
-              <span className="text-xs uppercase font-extrabold tracking-wider">
+              <span className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider">
                 {partner.isOnline ? 'YOU ARE ONLINE • READY FOR DISPATCH' : 'YOU ARE OFFLINE'}
               </span>
             </div>
-            <h2 className="text-xl font-black mt-1">{partner.fullName}</h2>
+            <h2 className="text-xl sm:text-2xl font-black mt-1 tracking-tight">{partner.fullName}</h2>
             <p className={`text-xs mt-0.5 ${partner.isOnline ? 'text-emerald-100' : 'text-slate-500'}`}>
               Zone: {partner.city} • {partner.vehicleType}
             </p>
@@ -343,14 +343,14 @@ export default function PartnerDashboardPage() {
           <button
             onClick={handleToggleDuty}
             disabled={isUpdatingDuty}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center gap-2 transition-all ${
+            className={`w-full sm:w-auto px-6 py-3.5 sm:py-2.5 rounded-xl font-black text-sm shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-95 ${
               partner.isOnline
-                ? 'bg-white text-emerald-800 hover:bg-emerald-50'
-                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                ? 'bg-white text-emerald-800 hover:bg-emerald-50 active:bg-slate-100'
+                : 'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800'
             }`}
           >
             <Power className="w-4 h-4" />
-            <span>{partner.isOnline ? 'Go Offline' : 'Go Online'}</span>
+            <span>{partner.isOnline ? 'Go Offline' : 'Go Online (Start Duty)'}</span>
           </button>
         </div>
       </div>
@@ -411,30 +411,30 @@ export default function PartnerDashboardPage() {
             </Button>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           {partner.isOnline ? (
-            <div className="flex items-center justify-between bg-emerald-50/70 p-4 rounded-xl border border-emerald-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-50/70 p-4 rounded-xl border border-emerald-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-bold">
+                <div className="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-black text-sm shrink-0">
                   3
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-emerald-950">Active Orders Available in Your Radius</h4>
-                  <p className="text-[11px] text-emerald-800">Orders ready for pickup at nearby partner restaurants.</p>
+                  <h4 className="text-xs sm:text-sm font-bold text-emerald-950">Active Orders Available Near You</h4>
+                  <p className="text-[11px] text-emerald-800">3 nearby pickups ready for dispatch in your radius.</p>
                 </div>
               </div>
               <Button
                 onClick={() => navigate('/orders')}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs h-10 px-5 active:scale-95"
               >
-                Accept Order
+                Accept Order Feed
               </Button>
             </div>
           ) : (
             <div className="text-center py-6 text-slate-500 text-xs">
               <Power className="w-6 h-6 text-slate-400 mx-auto mb-2" />
               <p className="font-semibold text-slate-700">You are currently offline</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Toggle duty switch to Online to start receiving delivery requests.</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Tap the Online button above to start receiving delivery requests.</p>
             </div>
           )}
         </CardContent>

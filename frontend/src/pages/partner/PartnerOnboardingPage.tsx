@@ -90,15 +90,15 @@ export default function PartnerOnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-xl">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-6 px-3 sm:py-10 sm:px-6 lg:px-8 font-sans">
+      <div className="w-full sm:mx-auto sm:max-w-xl">
         {/* Header Branding */}
-        <div className="flex flex-col items-center mb-6 text-center">
-          <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white mb-3 shadow-md">
+        <div className="flex flex-col items-center mb-4 sm:mb-6 text-center">
+          <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white mb-2.5 shadow-md">
             <Bike className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Become a Delivery Partner</h1>
-          <p className="text-sm text-slate-500 mt-1">Start earning with flexible hours and weekly payouts</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Become a Delivery Partner</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Start earning with flexible hours and weekly payouts</p>
         </div>
 
         {/* Step Progress Indicators */}
@@ -369,19 +369,19 @@ export default function PartnerOnboardingPage() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-6">
+            <div className="flex items-center justify-between pt-5 border-t border-slate-100 mt-6 gap-3">
               {step > 1 ? (
-                <Button type="button" variant="secondary" onClick={handleBack} disabled={isLoading}>
+                <Button type="button" variant="secondary" onClick={handleBack} disabled={isLoading} className="h-11 px-4 text-xs font-bold active:scale-95">
                   <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
                 </Button>
               ) : (
-                <Link to="/login" className="text-xs text-slate-500 hover:text-slate-800 font-medium">
-                  Already have an account? Sign In
+                <Link to="/login" className="text-xs text-slate-500 hover:text-slate-800 font-medium py-2">
+                  Already a rider? <strong className="text-emerald-700">Sign In</strong>
                 </Link>
               )}
 
               {step < 4 ? (
-                <Button type="button" onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Button type="button" onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 text-white h-11 px-5 text-xs font-bold active:scale-95">
                   Next Step <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
               ) : (
@@ -389,7 +389,7 @@ export default function PartnerOnboardingPage() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-bold"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white h-11 px-6 font-bold text-xs active:scale-95 shadow-md"
                 >
                   {isLoading ? 'Submitting Application...' : 'Submit Application'}
                 </Button>

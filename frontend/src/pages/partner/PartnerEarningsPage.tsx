@@ -29,25 +29,25 @@ export default function PartnerEarningsPage() {
       </div>
 
       {/* Hero Earnings Banner */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-md">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 sm:p-6 shadow-md">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Accumulated Balance</span>
-            <div className="text-3xl font-black mt-1 text-emerald-400">₹{earnings.toFixed(2)}</div>
-            <span className="text-[11px] text-slate-300 mt-1 block">Scheduled for next Tuesday payout</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Balance</span>
+            <div className="text-2xl sm:text-3xl font-black mt-1 text-emerald-400">₹{earnings.toFixed(2)}</div>
+            <span className="text-[11px] text-slate-300 mt-0.5 block">Direct bank deposit every Tuesday</span>
           </div>
           <div className="p-3 bg-white/10 rounded-2xl">
-            <DollarSign className="w-8 h-8 text-emerald-400" />
+            <DollarSign className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-400" />
           </div>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+        <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-1.5 text-slate-300">
-            <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Payout UPI: <strong>{partner?.upiId || 'Not linked'}</strong></span>
+            <CreditCard className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="truncate">Payout UPI: <strong className="text-white">{partner?.upiId || 'rajesh@okhdfcbank'}</strong></span>
           </div>
-          <span className="text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded">
-            Auto-Transfer Enabled
+          <span className="self-start sm:self-auto text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded text-[11px]">
+            Direct Deposit Active
           </span>
         </div>
       </div>

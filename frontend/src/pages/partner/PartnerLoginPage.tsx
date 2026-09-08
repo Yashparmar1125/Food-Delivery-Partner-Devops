@@ -84,7 +84,7 @@ export default function PartnerLoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 mt-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm h-12 mt-2 rounded-xl active:scale-95 shadow-md"
               >
                 {isLoading ? 'Signing In...' : 'Sign In as Delivery Partner'}
               </Button>
@@ -94,9 +94,9 @@ export default function PartnerLoginPage() {
               <button
                 type="button"
                 onClick={fillDemoRider}
-                className="w-full py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors text-center"
+                className="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors text-center active:scale-95 border border-slate-200"
               >
-                Quick Demo: Fill Active Rider Credentials (rider_rajesh)
+                ⚡ Fill Demo Active Rider (rider_rajesh)
               </button>
 
               <div className="text-center pt-2">

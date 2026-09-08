@@ -47,26 +47,26 @@ export default function PartnerProfilePage() {
 
       {/* Vehicle & Compliance Credentials */}
       <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="py-3 px-5 bg-slate-50 border-b border-slate-200/80">
+        <CardHeader className="py-3 px-4 sm:px-5 bg-slate-50 border-b border-slate-200/80">
           <CardTitle className="text-sm flex items-center gap-2">
             <Bike className="w-4 h-4 text-emerald-600" />
             <span>Vehicle & License Credentials</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-5 grid grid-cols-2 gap-4 text-xs">
-          <div>
+        <CardContent className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-xs">
+          <div className="bg-slate-50 p-2.5 rounded-lg sm:bg-transparent sm:p-0">
             <span className="text-slate-400 block font-medium">Vehicle Type</span>
             <span className="text-slate-900 font-bold text-sm">{partner.vehicleType}</span>
           </div>
-          <div>
+          <div className="bg-slate-50 p-2.5 rounded-lg sm:bg-transparent sm:p-0">
             <span className="text-slate-400 block font-medium">Vehicle Registration Plate (RC)</span>
             <span className="text-slate-900 font-bold text-sm">{partner.vehicleRegistrationNumber || 'N/A'}</span>
           </div>
-          <div>
+          <div className="bg-slate-50 p-2.5 rounded-lg sm:bg-transparent sm:p-0">
             <span className="text-slate-400 block font-medium">Driving License Number</span>
             <span className="text-slate-900 font-bold text-sm">{partner.licenseNumber || 'N/A'}</span>
           </div>
-          <div>
+          <div className="bg-slate-50 p-2.5 rounded-lg sm:bg-transparent sm:p-0">
             <span className="text-slate-400 block font-medium">National Aadhaar ID</span>
             <span className="text-slate-900 font-bold text-sm">{partner.aadhaarNumber || 'Verified'}</span>
           </div>

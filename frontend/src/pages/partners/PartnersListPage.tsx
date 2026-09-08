@@ -198,7 +198,7 @@ export default function PartnersListPage() {
                       {format(new Date(partner.createdAt), 'MMM d, yyyy')}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link to={`/partners/${partner.id}`}>
+                      <Link to={`/backoffice/partners/${partner.id}`}>
                         <Button variant="secondary" size="sm" className="text-sm font-medium">
                           View
                         </Button>

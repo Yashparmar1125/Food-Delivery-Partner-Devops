@@ -156,7 +156,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-4">
                       <StatusBadge status={partner.currentStatus as PartnerStatus} />
                       <Link
-                        to={`/verification/${partner.id}`}
+                        to={`/backoffice/verification/${partner.id}`}
                         className="text-xs font-medium text-[#E8590C] hover:text-[#d6510a] bg-orange-50 px-3 py-1.5 rounded-md"
                       >
                         Review

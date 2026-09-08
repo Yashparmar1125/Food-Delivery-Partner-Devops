@@ -96,7 +96,7 @@ export default function BackofficeLoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-10 mt-2 shadow-md shadow-blue-600/30"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-sm h-12 mt-2 rounded-xl shadow-md shadow-blue-600/30 active:scale-95"
               >
                 {isLoading ? 'Authenticating...' : 'Sign In to Back-Office'}
               </Button>
@@ -107,16 +107,16 @@ export default function BackofficeLoginPage() {
                 <button
                   type="button"
                   onClick={fillAdmin}
-                  className="py-1.5 px-2 bg-slate-900 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded border border-slate-700 transition-colors"
+                  className="py-2.5 px-2 bg-slate-900 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition-all active:scale-95 text-center"
                 >
-                  Fill: Admin (Full Access)
+                  ⚡ Admin
                 </button>
                 <button
                   type="button"
                   onClick={fillOps}
-                  className="py-1.5 px-2 bg-slate-900 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded border border-slate-700 transition-colors"
+                  className="py-2.5 px-2 bg-slate-900 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition-all active:scale-95 text-center"
                 >
-                  Fill: Ops Manager
+                  ⚡ Ops Manager
                 </button>
               </div>
             </div>

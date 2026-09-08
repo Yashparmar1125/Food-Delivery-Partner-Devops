@@ -89,12 +89,12 @@ export const PartnerLayout: React.FC = () => {
       </header>
 
       {/* Main App Content Area */}
-      <main className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-6 pb-24 md:pb-8">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 md:p-6 pb-28 md:pb-8">
         <Outlet context={{ partner, refreshProfile: fetchProfile }} />
       </main>
 
-      {/* Mobile-First Sticky Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg py-2 px-6">
+      {/* Mobile-First Sticky Bottom Nav with Safe-Area Inset */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-safe px-3 sm:px-6">
         <div className="max-w-md mx-auto flex items-center justify-around">
           {navItems.map((item) => (
             <NavLink
@@ -102,15 +102,15 @@ export const PartnerLayout: React.FC = () => {
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-xs font-medium transition-colors ${
+                `flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] py-1 px-2 rounded-xl text-xs font-semibold transition-all active:scale-95 ${
                   isActive
-                    ? 'text-emerald-600 font-bold'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'text-emerald-700 font-bold bg-emerald-50/80'
+                    : 'text-slate-500 hover:text-slate-900 active:bg-slate-100'
                 }`
               }
             >
               <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
+              <span className="text-[11px] leading-tight">{item.label}</span>
             </NavLink>
           ))}
         </div>
