@@ -13,6 +13,11 @@ pipeline {
         timestamps()
     }
 
+    triggers {
+        githubPush()
+        pollSCM('H/5 * * * *')
+    }
+
     environment {
         APP_NAME = 'food-delivery-partner-portal'
         SPRING_PROFILES_ACTIVE = 'test'
