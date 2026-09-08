@@ -1,0 +1,21 @@
+---
+# ==============================================================================
+# Production Environment Variables: Azure Cloud Host
+# ==============================================================================
+spring_profiles_active: prod
+server_port: 8080
+db_port: 5432
+db_name: partner_portal_db
+db_username: partner_admin
+db_password: "ProdSecurePassword2026!#"
+jwt_secret: "prod-cloud-secret-key-9a7b8c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"
+jwt_expiration_ms: 86400000
+log_level: INFO
+
+# Public Domain & Ingress
+domain_name: api.dpa.yashparmar.in
+certbot_admin_email: admin@yashparmar.in
+
+# Jenkins Configuration
+jenkins_port: 9090
+jenkins_home_dir: /opt/jenkins_home

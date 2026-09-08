@@ -1,0 +1,74 @@
+---
+# Tasks for role: nginx_ssl
+
+- name: Install Nginx, Certbot, and Python Certbot Nginx plugin
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure Certbot webroot directory exists
+  ansible.builtin.file:
+    path: /var/www/certbot
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Check if Let's Encrypt SSL certificate already exists
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+  register: ssl_cert_stat
+
+- name: Temporarily stop Nginx for standalone Certbot validation if certificate is missing
+  ansible.builtin.systemd:
+    name: nginx
+    state: stopped
+  when: not ssl_cert_stat.stat.exists
+
+- name: Obtain Let's Encrypt SSL certificate via Certbot standalone
+  ansible.builtin.command: >
+    certbot certonly --standalone
+    -d {{ domain_name }}
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_admin_email }}
+    --preferred-challenges http
+  when: not ssl_cert_stat.stat.exists
+
+- name: Deploy production Nginx configuration for domain
+  ansible.builtin.template:
+    src: nginx_site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ domain_name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload Nginx
+
+- name: Enable domain site in Nginx
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ domain_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ domain_name }}.conf"
+    state: link
+  notify: Reload Nginx
+
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload Nginx
+
+- name: Ensure Nginx service is enabled and started
+  ansible.builtin.systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Setup systemd timer for automatic Certbot SSL certificate renewal
+  ansible.builtin.systemd:
+    name: certbot.timer
+    state: started
+    enabled: yes

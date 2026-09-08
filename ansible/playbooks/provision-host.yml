@@ -36,6 +36,13 @@
         - filesystem
         - config
 
+    - role: nginx_ssl
+      tags:
+        - nginx
+        - ssl
+        - certbot
+      when: domain_name is defined
+
   post_tasks:
     - name: Verify Docker service health
       ansible.builtin.command: docker --version
