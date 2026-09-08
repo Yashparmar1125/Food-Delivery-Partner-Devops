@@ -49,6 +49,18 @@ public abstract class SeleniumBaseTest {
         options.addArguments("--disable-gpu");
         options.addArguments("--remote-allow-origins=*");
 
+        // Explicit binary fallbacks for Linux CI / Docker containers
+        java.io.File chromium = new java.io.File("/usr/bin/chromium");
+        java.io.File chromiumBrowser = new java.io.File("/usr/bin/chromium-browser");
+        java.io.File googleChrome = new java.io.File("/usr/bin/google-chrome");
+        if (chromium.exists()) {
+            options.setBinary(chromium);
+        } else if (chromiumBrowser.exists()) {
+            options.setBinary(chromiumBrowser);
+        } else if (googleChrome.exists()) {
+            options.setBinary(googleChrome);
+        }
+
         try {
             driver = new ChromeDriver(options);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));

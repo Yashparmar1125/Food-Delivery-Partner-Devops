@@ -74,6 +74,28 @@ pipeline {
             }
         }
 
+        stage('Frontend CI (Lint, Typecheck & PWA Build)') {
+            steps {
+                echo 'Validating Frontend PWA dependencies, TypeScript types, and production bundle...'
+                sh '''
+                    if command -v npm >/dev/null 2>&1; then
+                        cd frontend
+                        npm ci --prefer-offline || npm install
+                        npx tsc --noEmit
+                        npm run build
+                        echo "Frontend PWA production build completed successfully."
+                    else
+                        echo "Node/npm not installed on Jenkins agent host; skipping local frontend build step."
+                    fi
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'frontend/dist/**', allowEmptyArchive: true
+                }
+            }
+        }
+
         stage('Archive Artifacts') {
             steps {
                 echo 'Archiving build artifacts and test reports...'
@@ -91,7 +113,7 @@ pipeline {
             steps {
                 echo "Building Docker container image: ${APP_NAME}:${BUILD_NUMBER}..."
                 script {
-                    sh 'docker build -t food-delivery-partner-portal:${BUILD_NUMBER} -t food-delivery-partner-portal:latest .'
+                    sh 'docker build -t food-delivery-partner-portal:1.0.0 -t food-delivery-partner-portal:${BUILD_NUMBER} -t food-delivery-partner-portal:latest .'
                     echo "Validating Docker Compose orchestration configuration..."
                     sh 'docker compose config --quiet || true'
                 }
@@ -109,10 +131,12 @@ pipeline {
                 echo "Deploying ${APP_NAME} to target environment via Docker Compose..."
                 script {
                     sh '''
-                        if [ -d "/opt/food-delivery-partner" ]; then
+                        if [ -f "docker-compose.yml" ]; then
+                            docker compose up -d --no-deps app
+                        elif [ -d "/opt/food-delivery-partner" ]; then
                             cd /opt/food-delivery-partner && docker compose up -d --no-deps app
                         else
-                            echo "Deployment directory /opt/food-delivery-partner not found, skipping container reload."
+                            echo "Deployment file docker-compose.yml not found, skipping container reload."
                         fi
                     '''
                 }
