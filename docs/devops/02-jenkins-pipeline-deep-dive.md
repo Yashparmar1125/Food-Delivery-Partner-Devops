@@ -70,7 +70,7 @@ flowchart TD
 * **Purpose:** Acts as an immediate security firewall at the threshold of the pipeline to prevent hardcoded credentials or API keys from ever being exposed or built.
 * **Technical Implementation:**
   * Executes a recursive regular-expression search across the codebase using `grep -rnE`.
-  * Excludes non-source build directories (`.git`, `node_modules`, `target`, `dist`).
+  * Excludes non-source and documentation build directories (`.git`, `node_modules`, `target`, `dist`, `docs`).
   * Scans for patterns indicating:
     1. Unencrypted private keys (`BEGIN PRIVATE KEY`)
     2. Cloud provider keys (`aws_secret_access_key`)
