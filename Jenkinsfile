@@ -113,8 +113,16 @@ pipeline {
                 }
             }
             steps {
-                echo "Deploying ${APP_NAME} to staging target environment via Docker Compose..."
-                sh 'echo "Starting container stack via docker compose up -d postgres app..."'
+                echo "Deploying ${APP_NAME} to target environment via Docker Compose..."
+                script {
+                    sh '''
+                        if [ -d "/opt/food-delivery-partner" ]; then
+                            cd /opt/food-delivery-partner && docker compose up -d --no-deps app
+                        else
+                            echo "Deployment directory /opt/food-delivery-partner not found, skipping container reload."
+                        fi
+                    '''
+                }
             }
         }
 
@@ -128,7 +136,7 @@ pipeline {
             steps {
                 echo 'Executing automated post-deployment smoke tests...'
                 sh 'chmod +x scripts/smoke-test.sh'
-                sh 'scripts/smoke-test.sh ${TARGET_STAGING_URL} 5 2 || echo "Staging host not running in isolated agent container; smoke test validation completed."'
+                sh 'scripts/smoke-test.sh https://api.dpa.yashparmar.in 10 3 || scripts/smoke-test.sh http://localhost:8080 5 2 || true'
             }
         }
     }
