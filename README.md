@@ -176,7 +176,20 @@ mvn clean test jacoco:report jacoco:check
 
 ---
 
-## 10. Contributors & License
+## 10. DevOps Tooling & Infrastructure Manuals
+
+Comprehensive architectural and operational guides for all DevOps tools implemented across this project:
+
+* 📘 [**Master DevOps Engineering & Tooling Manual**](docs/DEVOPS_TOOLING_MANUAL.md) — Architectural overview, tool topology, and end-to-end integration flow.
+* 🛠️ [**Chapter 1: Ansible Automation**](docs/devops/01-ansible-automation.md) — IaC, host provisioning, idempotent playbooks, deployment, and rollback.
+* ⚙️ [**Chapter 2: Jenkins CI/CD Pipeline Deep Dive**](docs/devops/02-jenkins-pipeline-deep-dive.md) — Detailed technical analysis of all 8 pipeline stages.
+* 🧪 [**Chapter 3: Continuous Testing & Quality Gates**](docs/devops/03-testing-strategy-and-quality-gates.md) — Testing pyramid (JUnit 5, JaCoCo, Selenium, Smoke Tests).
+* 🐳 [**Chapter 4: Docker & Container Orchestration**](docs/devops/04-docker-and-orchestration.md) — Multi-stage builds, non-root runtime, and Docker Compose topology.
+* 🛡️ [**Chapter 5: Supplementary DevOps Tools**](docs/devops/05-supplementary-devops-tools.md) — Aqua Trivy vulnerability scanning, GHCR, Vite PWA, and Nginx SSL/TLS.
+
+---
+
+## 11. Contributors & License
 
 * **Authors:** Academic Engineering & DevOps Pair Team
 * **License:** [MIT License](LICENSE)
