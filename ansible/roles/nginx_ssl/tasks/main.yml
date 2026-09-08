@@ -55,6 +55,46 @@
     state: link
   notify: Reload Nginx
 
+- name: Check if Let's Encrypt SSL certificate for Jenkins exists
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/live/{{ jenkins_domain_name }}/fullchain.pem"
+  register: jenkins_ssl_cert_stat
+  when: jenkins_domain_name is defined
+
+- name: Temporarily stop Nginx for standalone Certbot validation if Jenkins certificate is missing
+  ansible.builtin.systemd:
+    name: nginx
+    state: stopped
+  when: jenkins_domain_name is defined and not jenkins_ssl_cert_stat.stat.exists
+
+- name: Obtain Let's Encrypt SSL certificate for Jenkins via Certbot standalone
+  ansible.builtin.command: >
+    certbot certonly --standalone
+    -d {{ jenkins_domain_name }}
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_admin_email }}
+    --preferred-challenges http
+  when: jenkins_domain_name is defined and not jenkins_ssl_cert_stat.stat.exists
+
+- name: Deploy production Nginx configuration for Jenkins domain
+  ansible.builtin.template:
+    src: nginx_jenkins.conf.j2
+    dest: "/etc/nginx/sites-available/{{ jenkins_domain_name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  when: jenkins_domain_name is defined
+  notify: Reload Nginx
+
+- name: Enable Jenkins domain site in Nginx
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ jenkins_domain_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ jenkins_domain_name }}.conf"
+    state: link
+  when: jenkins_domain_name is defined
+  notify: Reload Nginx
+
 - name: Remove default Nginx site
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
@@ -72,3 +112,4 @@
     name: certbot.timer
     state: started
     enabled: yes
+

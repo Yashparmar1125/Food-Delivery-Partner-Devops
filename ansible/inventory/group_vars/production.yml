@@ -14,8 +14,10 @@ log_level: INFO
 
 # Public Domain & Ingress
 domain_name: api.dpa.yashparmar.in
+jenkins_domain_name: jenkins.dpa.yashparmar.in
 certbot_admin_email: admin@yashparmar.in
 
 # Jenkins Configuration
 jenkins_port: 9090
 jenkins_home_dir: /opt/jenkins_home
+
