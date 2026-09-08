@@ -18,6 +18,10 @@ pipeline {
         SPRING_PROFILES_ACTIVE = 'test'
         TARGET_STAGING_URL = 'https://api.dpa.yashparmar.in'
         FRONTEND_PORT = '4173'
+        REGISTRY = 'ghcr.io'
+        IMAGE_NAME = 'ghcr.io/yashparmar1125/food-delivery-partner-portal'
+        TARGET_HOST = '20.2.68.23'
+        TARGET_USER = 'ubuntu'
     }
 
     stages {
@@ -186,32 +190,45 @@ pipeline {
             }
         }
 
-        stage('Stage 6: Docker Container Build & DevSecOps Image Scan') {
+        stage('Stage 6: Docker Container Build, Trivy Scan & Push to GHCR') {
             steps {
-                echo "Building Docker container image: ${APP_NAME}:1.0.0..."
-                sh 'docker build -t food-delivery-partner-portal:1.0.0 -t food-delivery-partner-portal:${BUILD_NUMBER} -t food-delivery-partner-portal:latest .'
+                echo "Building Docker container image: ${IMAGE_NAME}:${BUILD_NUMBER}..."
+                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
                 echo 'Scanning container image for OS & package CVEs using Trivy...'
-                sh '''
+                sh """
                     if command -v docker >/dev/null 2>&1; then
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --scanners vuln --exit-code 0 food-delivery-partner-portal:1.0.0 || true
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --scanners vuln --exit-code 0 ${IMAGE_NAME}:${BUILD_NUMBER} || true
                     fi
-                '''
+                """
+                echo 'Authenticating and pushing image to GitHub Container Registry (GHCR)...'
+                withCredentials([usernamePassword(credentialsId: 'container-registry-creds',
+                                                  usernameVariable: 'REG_USER',
+                                                  passwordVariable: 'REG_PASS')]) {
+                    sh """
+                        echo "\$REG_PASS" | docker login -u "\$REG_USER" --password-stdin ${REGISTRY}
+                        docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${IMAGE_NAME}:latest
+                    """
+                }
             }
         }
 
-        stage('Stage 7: Zero-Downtime Deployment Gate') {
+        stage('Stage 7: Remote Production Deployment via SSH') {
             steps {
-                echo "Deploying ${APP_NAME} to target environment via Docker Compose..."
-                script {
-                    sh '''
-                        if [ -f "docker-compose.yml" ]; then
-                            docker compose -p food-delivery-partner up -d --no-deps app
-                        elif [ -d "/opt/food-delivery-partner" ]; then
-                            cd /opt/food-delivery-partner && docker compose -p food-delivery-partner up -d --no-deps app
-                        else
-                            echo "Deployment file docker-compose.yml not found, skipping container reload."
-                        fi
-                    '''
+                echo "Executing remote production deployment on ${TARGET_USER}@${TARGET_HOST} via SSH..."
+                withCredentials([usernamePassword(credentialsId: 'container-registry-creds',
+                                                  usernameVariable: 'REG_USER',
+                                                  passwordVariable: 'REG_PASS')]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/id_rsa ${TARGET_USER}@${TARGET_HOST} "
+                            echo '\$REG_PASS' | sudo docker login -u '\$REG_USER' --password-stdin ${REGISTRY} &&
+                            cd /opt/food-delivery-partner &&
+                            export IMAGE_NAME=${IMAGE_NAME} &&
+                            export IMAGE_TAG=${BUILD_NUMBER} &&
+                            sudo docker compose -p food-delivery-partner pull app &&
+                            sudo docker compose -p food-delivery-partner up -d --no-deps app
+                        "
+                    """
                 }
             }
         }

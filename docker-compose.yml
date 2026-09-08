@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: food-delivery-partner-portal:1.0.0
+    image: ${IMAGE_NAME:-ghcr.io/yashparmar1125/food-delivery-partner-portal}:${IMAGE_TAG:-latest}
     container_name: partner-portal-backend
     restart: unless-stopped
     depends_on:
