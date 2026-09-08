@@ -40,17 +40,20 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final com.project.partnerportal.repository.DeliveryPartnerRepository deliveryPartnerRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,
                           RoleRepository roleRepository,
+                          com.project.partnerportal.repository.DeliveryPartnerRepository deliveryPartnerRepository,
                           PasswordEncoder passwordEncoder,
                           JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.deliveryPartnerRepository = deliveryPartnerRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
     }
@@ -107,5 +110,63 @@ public class AuthController {
         userRepository.save(user);
 
         return new ResponseEntity<>(ApiResponse.success("User registered successfully", user.getUsername()), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/partner/register")
+    @Operation(summary = "Register Delivery Partner", description = "Public self-registration for riders with instant KYC onboarding")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<ApiResponse<AuthResponse>> registerPartner(@Valid @RequestBody com.project.partnerportal.dto.PartnerRegistrationDto req) {
+        if (userRepository.existsByUsername(req.getUsername())) {
+            throw new DuplicateResourceException("Username '" + req.getUsername() + "' is already taken");
+        }
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new DuplicateResourceException("Email '" + req.getEmail() + "' is already registered");
+        }
+        if (deliveryPartnerRepository.existsByPhoneNumber(req.getPhoneNumber())) {
+            throw new DuplicateResourceException("Phone number '" + req.getPhoneNumber() + "' is already registered to a partner");
+        }
+        if (req.getVehicleRegistrationNumber() != null && !req.getVehicleRegistrationNumber().isBlank()
+                && deliveryPartnerRepository.existsByVehicleRegistrationNumber(req.getVehicleRegistrationNumber())) {
+            throw new DuplicateResourceException("Vehicle registration '" + req.getVehicleRegistrationNumber() + "' is already registered");
+        }
+
+        // 1. Create User
+        User user = new User(
+                req.getUsername(),
+                req.getEmail(),
+                passwordEncoder.encode(req.getPassword()),
+                req.getFullName(),
+                ""
+        );
+        Role partnerRole = roleRepository.findByName("ROLE_PARTNER")
+                .orElseGet(() -> roleRepository.save(new Role("ROLE_PARTNER", "Delivery partner role")));
+        user.setRoles(Set.of(partnerRole));
+        User savedUser = userRepository.save(user);
+
+        // 2. Create DeliveryPartner
+        com.project.partnerportal.entity.DeliveryPartner partner = new com.project.partnerportal.entity.DeliveryPartner(
+                req.getFullName(),
+                req.getEmail(),
+                req.getPhoneNumber(),
+                req.getVehicleType(),
+                req.getVehicleRegistrationNumber(),
+                req.getLicenseNumber(),
+                req.getCity()
+        );
+        partner.setUser(savedUser);
+        partner.setAadhaarNumber(req.getAadhaarNumber());
+        partner.setUpiId(req.getUpiId());
+        partner.setCurrentStatus(com.project.partnerportal.entity.PartnerStatus.PENDING);
+        partner.setOnline(false);
+        deliveryPartnerRepository.save(partner);
+
+        // 3. Issue Token
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
+        );
+        String jwt = jwtUtils.generateToken(auth);
+
+        AuthResponse authResponse = new AuthResponse(jwt, user.getUsername(), user.getEmail(), List.of("ROLE_PARTNER"));
+        return new ResponseEntity<>(ApiResponse.success("Partner application submitted successfully", authResponse), HttpStatus.CREATED);
     }
 }

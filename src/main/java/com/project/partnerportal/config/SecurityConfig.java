@@ -69,6 +69,9 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_ADMIN", "ROLE_OPS_MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/partners/*")
                         .hasAnyAuthority("ROLE_ADMIN")
+                        // Partner self-service endpoints
+                        .requestMatchers("/api/v1/partner/**")
+                        .hasAuthority("ROLE_PARTNER")
                         // Dashboard and Read operations
                         .requestMatchers("/api/v1/partners/**", "/api/v1/dashboard/**")
                         .hasAnyAuthority("ROLE_ADMIN", "ROLE_OPS_MANAGER", "ROLE_SUPPORT")

@@ -2,7 +2,53 @@ export type PartnerStatus = 'PENDING' | 'VERIFICATION' | 'ACTIVE' | 'SUSPENDED' 
 
 export type VehicleType = 'BICYCLE' | 'MOTORCYCLE' | 'SCOOTER' | 'CAR' | 'VAN';
 
-export type UserRole = 'ROLE_ADMIN' | 'ROLE_OPS_MANAGER' | 'ROLE_VIEWER' | 'ROLE_SUPPORT';
+export type UserRole = 'ROLE_ADMIN' | 'ROLE_OPS_MANAGER' | 'ROLE_VIEWER' | 'ROLE_SUPPORT' | 'ROLE_PARTNER';
+
+export interface PartnerMe {
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  city: string;
+  vehicleType: VehicleType;
+  vehicleRegistrationNumber?: string;
+  licenseNumber?: string;
+  aadhaarNumber?: string;
+  upiId?: string;
+  currentStatus: PartnerStatus;
+  isOnline: boolean;
+  totalEarnings: number;
+  completedDeliveries: number;
+  createdAt: string | null;
+  rejectionReason?: string | null;
+}
+
+export interface DeliveryOrder {
+  orderId: string;
+  restaurantName: string;
+  restaurantAddress: string;
+  customerName: string;
+  customerAddress: string;
+  estimatedPayout: number;
+  distanceKm: number;
+  status: string;
+  itemCount: number;
+}
+
+export interface PartnerRegistrationData {
+  username: string;
+  password: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  city: string;
+  vehicleType: VehicleType;
+  vehicleRegistrationNumber?: string;
+  licenseNumber?: string;
+  aadhaarNumber?: string;
+  upiId?: string;
+}
 
 export interface Partner {
   id: string;

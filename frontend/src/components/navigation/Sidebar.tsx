@@ -67,7 +67,7 @@ export const Sidebar: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={logout}
+          onClick={() => logout()}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
         >
           <LogOut className="w-4 h-4" />

@@ -18,7 +18,8 @@ export const ProtectedRoute: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const isBackoffice = location.pathname.startsWith('/backoffice');
+    return <Navigate to={isBackoffice ? '/backoffice/login' : '/login'} state={{ from: location }} replace />;
   }
 
   return <Outlet />;

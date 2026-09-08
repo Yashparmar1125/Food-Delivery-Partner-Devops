@@ -7,8 +7,11 @@ interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
+  isPartner: boolean;
+  isStaff: boolean;
+  login: (username: string, password: string, customRedirect?: string) => Promise<void>;
+  setAuthSession: (authUser: AuthUser, redirectPath?: string) => void;
+  logout: (redirectTo?: string) => void;
   hasRole: (role: string) => boolean;
   canCreate: boolean;
   canEdit: boolean;
@@ -61,25 +64,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (username: string, password: string) => {
-    const authUser = await authApi.login(username, password);
+  const setAuthSession = useCallback((authUser: AuthUser, redirectPath?: string) => {
     localStorage.setItem('pp_token', authUser.token);
     localStorage.setItem('pp_user', JSON.stringify(authUser));
     setUser(authUser);
-    navigate('/dashboard');
+
+    if (redirectPath) {
+      navigate(redirectPath);
+    } else if (authUser.roles.includes('ROLE_PARTNER')) {
+      navigate('/');
+    } else {
+      navigate('/backoffice/dashboard');
+    }
+  }, [navigate]);
+
+  const login = async (username: string, password: string, customRedirect?: string) => {
+    const authUser = await authApi.login(username, password);
+    setAuthSession(authUser, customRedirect);
   };
 
-  const logout = useCallback(() => {
+  const logout = useCallback((redirectTo?: string) => {
+    const isCurrentlyPartner = user?.roles.includes('ROLE_PARTNER');
     localStorage.removeItem('pp_token');
     localStorage.removeItem('pp_user');
     setUser(null);
-    navigate('/login');
-  }, [navigate]);
+
+    if (redirectTo) {
+      navigate(redirectTo);
+    } else if (isCurrentlyPartner) {
+      navigate('/login');
+    } else {
+      navigate('/backoffice/login');
+    }
+  }, [navigate, user]);
 
   const hasRole = (role: string) => {
     return user?.roles.includes(role) ?? false;
   };
 
+  const isPartner = hasRole('ROLE_PARTNER');
+  const isStaff = hasRole('ROLE_ADMIN') || hasRole('ROLE_OPS_MANAGER') || hasRole('ROLE_SUPPORT');
   const canCreate = hasRole('ROLE_ADMIN') || hasRole('ROLE_OPS_MANAGER');
   const canEdit = hasRole('ROLE_ADMIN') || hasRole('ROLE_OPS_MANAGER');
   const canDelete = hasRole('ROLE_ADMIN');
@@ -89,7 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isAuthenticated: !!user,
     isLoading,
+    isPartner,
+    isStaff,
     login,
+    setAuthSession,
     logout,
     hasRole,
     canCreate,

@@ -60,6 +60,25 @@ public class DeliveryPartner {
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "is_online", nullable = false)
+    private boolean isOnline = false;
+
+    @Column(name = "aadhaar_number", length = 30)
+    private String aadhaarNumber;
+
+    @Column(name = "upi_id", length = 50)
+    private String upiId;
+
+    @Column(name = "total_earnings")
+    private Double totalEarnings = 0.0;
+
+    @Column(name = "completed_deliveries")
+    private Integer completedDeliveries = 0;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -179,5 +198,53 @@ public class DeliveryPartner {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
+    public String getAadhaarNumber() {
+        return aadhaarNumber;
+    }
+
+    public void setAadhaarNumber(String aadhaarNumber) {
+        this.aadhaarNumber = aadhaarNumber;
+    }
+
+    public String getUpiId() {
+        return upiId;
+    }
+
+    public void setUpiId(String upiId) {
+        this.upiId = upiId;
+    }
+
+    public Double getTotalEarnings() {
+        return totalEarnings != null ? totalEarnings : 0.0;
+    }
+
+    public void setTotalEarnings(Double totalEarnings) {
+        this.totalEarnings = totalEarnings;
+    }
+
+    public Integer getCompletedDeliveries() {
+        return completedDeliveries != null ? completedDeliveries : 0;
+    }
+
+    public void setCompletedDeliveries(Integer completedDeliveries) {
+        this.completedDeliveries = completedDeliveries;
     }
 }
