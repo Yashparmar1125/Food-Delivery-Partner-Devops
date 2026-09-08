@@ -205,9 +205,9 @@ pipeline {
                 script {
                     sh '''
                         if [ -f "docker-compose.yml" ]; then
-                            docker compose up -d --no-deps app
+                            docker compose -p food-delivery-partner up -d --no-deps app
                         elif [ -d "/opt/food-delivery-partner" ]; then
-                            cd /opt/food-delivery-partner && docker compose up -d --no-deps app
+                            cd /opt/food-delivery-partner && docker compose -p food-delivery-partner up -d --no-deps app
                         else
                             echo "Deployment file docker-compose.yml not found, skipping container reload."
                         fi
