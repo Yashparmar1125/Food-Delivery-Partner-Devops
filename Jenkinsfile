@@ -36,7 +36,7 @@ pipeline {
                 checkout scm
                 echo 'Scanning codebase for accidental credentials, secrets, or private keys...'
                 sh '''
-                    if grep -rnE --exclude=Jenkinsfile --exclude-dir={.git,node_modules,target,dist,docs} "(BEGIN PRIVATE KEY|aws_secret_access_key|ghp_[a-zA-Z0-9]{36})" . ; then
+                    if grep -rnE --exclude=Jenkinsfile --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=target --exclude-dir=dist --exclude-dir=docs "(BEGIN PRIVATE KEY|aws_secret_access_key|ghp_[a-zA-Z0-9]{36})" . ; then
                         echo "CRITICAL: Hardcoded secret detected in repository! Failing pre-flight."
                         exit 1
                     else

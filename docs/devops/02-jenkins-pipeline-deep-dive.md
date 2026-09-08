@@ -71,10 +71,7 @@ flowchart TD
 * **Technical Implementation:**
   * Executes a recursive regular-expression search across the codebase using `grep -rnE`.
   * Excludes non-source and documentation build directories (`.git`, `node_modules`, `target`, `dist`, `docs`).
-  * Scans for patterns indicating:
-    1. Unencrypted private keys (`BEGIN PRIVATE KEY`)
-    2. Cloud provider keys (`aws_secret_access_key`)
-    3. GitHub Personal Access Tokens (`ghp_[a-zA-Z0-9]{36}`)
+  * Scans for patterns indicating unencrypted RSA keys (`BEGIN...PRIVATE KEY`), cloud provider access keys, and GitHub access tokens (`ghp_...`).
 * **Failure Condition:** If any unencrypted credential pattern is matched, the stage exits with status `1`, aborting the pipeline before executing any subsequent tasks.
 
 ---
