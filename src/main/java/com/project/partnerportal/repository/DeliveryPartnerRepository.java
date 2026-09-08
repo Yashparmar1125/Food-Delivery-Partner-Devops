@@ -2,6 +2,7 @@ package com.project.partnerportal.repository;
 
 import com.project.partnerportal.entity.DeliveryPartner;
 import com.project.partnerportal.entity.PartnerStatus;
+import com.project.partnerportal.entity.User;
 import com.project.partnerportal.entity.VehicleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
