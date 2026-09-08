@@ -121,7 +121,7 @@ export default function VerificationQueuePage() {
                       <StatusBadge status={partner.currentStatus as PartnerStatus} />
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link to={`/verification/${partner.id}`}>
+                      <Link to={`/backoffice/verification/${partner.id}`}>
                         <Button className="bg-[#E8590C] hover:bg-[#d6510a] text-sm">
                           Review
                         </Button>

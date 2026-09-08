@@ -35,7 +35,7 @@ export default function VerificationReviewPage() {
       toastSuccess(isApproved ? 'Partner advanced successfully' : 'Partner rejected');
       
       if (variables.status === 'ACTIVE' || variables.status === 'REJECTED') {
-        navigate('/verification');
+        navigate('/backoffice/verification');
       }
     },
     onError: (error: any) => {

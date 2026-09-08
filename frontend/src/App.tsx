@@ -103,6 +103,7 @@ export default function App() {
         <Route path="/dashboard" element={<Navigate to="/backoffice/dashboard" replace />} />
         <Route path="/partners" element={<Navigate to="/backoffice/partners" replace />} />
         <Route path="/verification" element={<Navigate to="/backoffice/verification" replace />} />
+        <Route path="/verification/:id" element={<Navigate to="/backoffice/verification/:id" replace />} />
         <Route path="/audit" element={<Navigate to="/backoffice/audit" replace />} />
         <Route path="/settings" element={<Navigate to="/backoffice/settings" replace />} />
 
