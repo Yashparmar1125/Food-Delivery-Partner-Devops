@@ -23,7 +23,7 @@ const STATUS_FILTERS: { label: string; value: string }[] = [
 ];
 
 export default function PartnersListPage() {
-  const { hasRole } = useAuth();
+  const { hasRole, canCreate } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   
   const page = parseInt(searchParams.get('page') || '0', 10);
@@ -63,7 +63,7 @@ export default function PartnersListPage() {
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <PageHeader title="Partners" description="Manage your delivery fleet" />
-        {hasRole('ROLE_OPS_MANAGER') && (
+        {(canCreate || hasRole('ROLE_ADMIN') || hasRole('ROLE_OPS_MANAGER')) && (
           <Link to="/partners/new">
             <Button className="bg-[#E8590C] hover:bg-[#d6510a]">
               <Plus className="w-4 h-4 mr-2" />
